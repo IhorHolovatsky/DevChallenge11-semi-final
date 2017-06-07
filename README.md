@@ -15,3 +15,4 @@ For example,
  Currently database is located at Amazon. But you can replace connection string with yours.
  Since, I used EF Code first approach, database will be created automatically.
 
+README.pdf, SCALEME.pdf were written in Ukrainian, because it was Ukrainian DevChallenge
