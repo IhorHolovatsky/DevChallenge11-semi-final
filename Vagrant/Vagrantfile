@@ -1,0 +1,50 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
+
+
+#if ! File.exists?('./BuildTools_Full.exe')
+#  puts 'Microsoft Build Tools 2013 installer could not be found!'
+#  puts "Please run:\n curl -O http://download.microsoft.com/download/9/B/B/9BB1309E-1A8F-4A47-A6C5-ECF76672A3B3/BuildTools_Full.exe"
+#  exit 1
+#end
+
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|  
+
+  #config.vm.box = "ferventcoder/win2008r2-x64-nocm"  
+  config.vm.box = "opentable/win-2012r2-standard-amd64-nocm"
+  config.vm.guest = :windows
+  
+  config.vm.box_check_update = false
+  
+  config.vm.communicator = "winrm"
+  
+  config.vm.network "private_network", ip: "192.168.123.123"
+  config.vm.network :forwarded_port, guest: 1025, host: 1025
+  config.vm.network :forwarded_port, guest: 3389, host: 1234
+  config.vm.network :forwarded_port, guest: 5985, host: 5985, id: "winrm", auto_correct: true
+ 
+  # .NET 4.5
+  config.vm.provision :shell, path: "vagrant-scripts/install-dot-net.ps1"  
+  #config.vm.provision :shell, path: "vagrant-scripts/install-dot-net-45.cmd"
+  #config.vm.provision :shell, path: "vagrant-scripts/install-msbuild-tools-2013.cmd"
+    
+  # IIS   
+  config.vm.provision :shell, path: "vagrant-scripts/install-iis.cmd"
+	
+  #Create Website
+  config.vm.provision :shell, path: "vagrant-scripts/copy-website.ps1"
+  #config.vm.provision :shell, path: "vagrant-scripts/build-website.cmd"
+  config.vm.provision :shell, path: "vagrant-scripts/creating-website-in-iis.cmd"
+  config.vm.provision :shell, path: "vagrant-scripts/setup-permissions-for-website-folder.ps1"
+  #config.vm.provision :shell, inline: <<-SHELL
+  #  Restart-Computer
+  #SHELL
+
+  
+end
